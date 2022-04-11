@@ -7,16 +7,19 @@ import time
 
 device_id = ""
 push_only = False
+tools_source_folder = "D:\\tool\\0_push_tool"
 
 def parse_option():
     # Fix me: what's the graceful way to handle global variable
     global push_only
     global device_id
+    global tools_source_folder
     parser = argparse.ArgumentParser()
     #parser.add_argument("square", type=int,
     #                help="display a square of a given number")
     parser.add_argument("-d", "--device_id", help="the device we want operate")
     parser.add_argument("-p", "--push_only", action="store_true", help="push tool only, don't reboot device")
+    parser.add_argument("-s", "--source_folder", help="tools source folder", default = tools_source_folder)
     args = parser.parse_args()
     if args.push_only:
         push_only = True
@@ -36,6 +39,9 @@ if __name__ == "__main__":
             exit()
     elif len(dev_list) == 1:
         device_id = dev_list[0]
+    elif len(dev_list) == 0:
+        print("No devices found, pls recheck")
+        exit()
     else:
         print("there are multiple devices, pls select correct on by index")
         idx = 0
@@ -70,13 +76,22 @@ if __name__ == "__main__":
     adb_remount(device_id)
     adb_mount(device_id, "/system")
 
-    file_list = ["iperf", "iwpriv", "datatop", "mpstat", "lspci", "setpci", "perf"]
+    file_list = {"iperf" : 0, "iwpriv" : 0, "datatop" : 0, "mpstat" : 0, "lspci" : 0, "setpci" : 0, "perf" : 0}
     path = "/system/bin"
     # fix: should clarify source folder of tools or not
-    folder = "D:\\tool\\0_push_tool"
+
     for file in file_list:
-        adb_push(device_id, os.path.join(folder, file), path)
-        adb_chmod_exec(device_id, file, path)
+        ret = adb_push(device_id, os.path.join(tools_source_folder, file), path)
+        if not ret:
+            adb_chmod_exec(device_id, file, path)
+            file_list[file] = 1
+        else:
+            print("file or folder doesn't exist folder %s file %s"%(tools_source_folder, file))
 
     adb_sync(device_id)
 
+    print("============== push status ==============")
+    for file in file_list:
+        print("file %s push %s"%(file, "success "if file_list[file] else "===========> failed"))
+    print("=========================================")
+    input("exit ?")
