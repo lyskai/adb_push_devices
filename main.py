@@ -25,6 +25,9 @@ def parse_option():
         push_only = True
     device_id = args.device_id
 
+def extra_setting(device_id):
+    adb_mount_debugfs(device_id)
+
 if __name__ == "__main__":
     parse_option()
     # if there is device id paramter, then use user setting
@@ -62,6 +65,8 @@ if __name__ == "__main__":
 
     adb_root(device_id)
     adb_disable_verity(device_id)
+
+    extra_setting(device_id)
 
     if not push_only:
         reboot = input("device will reboot, to let disable verity take effect, Y/N ?")
