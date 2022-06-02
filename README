@@ -1,6 +1,7 @@
 1. Generate a spec file, used to modify package info.
    Now tool path and name are clarified, and final binary name is there.
-	pyi-makespec main.py
+	pyi-makespec -F --oneline main.py
+	then modify main.spec to add tools needed
 2. Gernrate final APP name
 	pyinstaller  main.spec
 
