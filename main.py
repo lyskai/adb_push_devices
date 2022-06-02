@@ -4,10 +4,11 @@ import os
 import sys, getopt
 import argparse
 import time
+from sys import exit
 
 device_id = ""
 push_only = False
-tools_source_folder = "D:\\tool\\0_push_tool"
+tools_source_folder = "tools"
 
 def parse_option():
     # Fix me: what's the graceful way to handle global variable
